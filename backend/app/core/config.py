@@ -69,6 +69,8 @@ class Settings(BaseSettings):
             path=self.POSTGRES_DB,
         )
 
+    SQLITE_DB: str = "database.db"
+
     SMTP_TLS: bool = True
     SMTP_SSL: bool = False
     SMTP_PORT: int = 587

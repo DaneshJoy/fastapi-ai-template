@@ -4,13 +4,15 @@ from app import crud
 from app.core.config import settings
 from app.models import User, UserCreate
 
+# Postgresql
 # engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
 # engine = create_engine("postgresql://postgres:buzzard@localhost:5432/buzzard")
-sqlite_file_name = "database.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
 
+# Sqlite
+SQLITE_DB = "database.db"
+SQLITE_URL = f"sqlite:///{settings.SQLITE_DB}"
 connect_args = {"check_same_thread": False}
-engine = create_engine(sqlite_url, echo=True, connect_args=connect_args)
+engine = create_engine(SQLITE_URL, echo=True, connect_args=connect_args)
 
 
 # make sure all SQLModel models are imported (app.models) before initializing DB

@@ -45,6 +45,15 @@ def read_users(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:
     statement = select(User).offset(skip).limit(limit)
     users = session.exec(statement).all()
 
+    # Ensure all user ids are uuid.UUID
+    import uuid
+    for user in users:
+        if hasattr(user, 'id') and not isinstance(user.id, uuid.UUID):
+            try:
+                user.id = uuid.UUID(str(user.id))
+            except Exception:
+                raise ValueError(f"Invalid UUID in user: {user.id}")
+
     return UsersPublic(data=users, count=count)
 
 
@@ -162,6 +171,12 @@ def read_user_by_id(
     """
     Get a specific user by id.
     """
+    import uuid
+    if not isinstance(user_id, uuid.UUID):
+        try:
+            user_id = uuid.UUID(str(user_id))
+        except Exception:
+            raise HTTPException(status_code=400, detail=f"Invalid user id: {user_id}")
     user = session.get(User, user_id)
     if user == current_user:
         return user
@@ -187,7 +202,11 @@ def update_user(
     """
     Update a user.
     """
-
+    if not isinstance(user_id, uuid.UUID):
+        try:
+            user_id = uuid.UUID(str(user_id))
+        except Exception:
+            raise HTTPException(status_code=400, detail=f"Invalid user id: {user_id}")
     db_user = session.get(User, user_id)
     if not db_user:
         raise HTTPException(
@@ -212,6 +231,12 @@ def delete_user(
     """
     Delete a user.
     """
+    import uuid
+    if not isinstance(user_id, uuid.UUID):
+        try:
+            user_id = uuid.UUID(str(user_id))
+        except Exception:
+            raise HTTPException(status_code=400, detail=f"Invalid user id: {user_id}")
     user = session.get(User, user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
